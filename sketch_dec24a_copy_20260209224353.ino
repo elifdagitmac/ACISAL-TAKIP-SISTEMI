@@ -5,10 +5,10 @@
 // Pin Tanımlamaları
 const int trigPin = 6;    // Trig -> Arduino Pin 6
 const int echoPin = 7;    // Echo -> Arduino Pin 7
-const int servoPin = 5;   // Servo Sinyal (Sarı) -> Arduino Pin 5
-const int buzzerPin = 8;  // Buzzer I/O (Siyah) -> Arduino Pin 8
+const int servoPin = 5;   // Servo Signal (Yellow) -> Arduino Pin 5
+const int buzzerPin = 8;  // Buzzer I/O (Black) -> Arduino Pin 8
 
-// Değişkenler
+// Variables
 long duration;
 int distance;
 int angle = 60;
@@ -35,10 +35,10 @@ void setup() {
 void loop() {
   distance = calculateDistance();
 
-  // 30 cm ve daha yakında bir cisim algılanırsa
+  // İf it recognize an object closer than 30 cm or in 30 cm
   if (distance > 0 && distance <= 30) {
     
-    // LCD Bilgilendirme
+    // LCD Information
     lcd.setCursor(0, 0);
     lcd.print("Cisim Algilandi ");
     lcd.setCursor(0, 1);
@@ -46,29 +46,29 @@ void loop() {
     lcd.print(distance);
     lcd.print(" cm   ");
 
-    // Cisim uzaklaşana kadar sistem kilitlenir
+    // System locks itself until the object goes 
     while (calculateDistance() <= 30) {
       int currentDist = calculateDistance();
       
-      // Buzzer frekansını mesafeye göre ayarla (Yaklaştıkça ses incelir)
-      // 2cm'de 1200Hz (ince), 30cm'de 300Hz (kalın) ses verir
+      // Adjust the buzzer frequency according to the distance (The sound gets higher as you get closer)
+      // It makes a 1200Hz (high) sound at 2cm and a 300Hz (low) sound at 30cm
       int toneFreq = map(currentDist, 2, 30, 1200, 300);
       tone(buzzerPin, toneFreq);
       
-      // LCD'deki mesafeyi anlık güncelle
+      // Update the distance in LCD for every moment 
       lcd.setCursor(8, 1);
       lcd.print(currentDist);
       lcd.print(" cm   ");
       delay(50); 
     }
     
-    // Cisim uzaklaştığında sesi kes ve ekranı temizle
+    // Cut the sound and clear the screen when the object moves away
     noTone(buzzerPin);
     lcd.clear();
     
   } else {
-    // Taramaya devam et 
-    noTone(buzzerPin); // Cisim yoksa ses yok
+    // Keep scanning 
+    noTone(buzzerPin); // No object No sound
     
     lcd.setCursor(0, 0);
     lcd.print("Tarama Yapiliyor");
@@ -79,7 +79,7 @@ void loop() {
 
     myServo.write(angle);
     
-    // Açı değiştirme mantığı
+    // Angle changing logic
     if (direction) {
       angle++;
       if (angle >= 120) direction = false;
@@ -87,11 +87,11 @@ void loop() {
       angle--;
       if (angle <= 60) direction = true;
     }
-    delay(35); // Tarama hızı 
+    delay(35); // Speed of scanning 
   }
 }
 
-// Ultrasonik Sensör Ölçüm Fonksiyonu
+// Ultrasonic Sensor Measurement Function
 int calculateDistance() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -100,7 +100,7 @@ int calculateDistance() {
   digitalWrite(trigPin, LOW);
   
   duration = pulseIn(echoPin, HIGH);
-  // Ses hızı üzerinden cm hesaplama
+  // Calculating cm based on sound speed
   int d = duration * 0.034 / 2;
   return d;
 }
